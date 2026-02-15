@@ -1,0 +1,11 @@
+packages:
+  # 客户端
+  - 'client'
+  # 服务器
+  - 'server'
+  # 文档
+  - 'docs'
+  # 工具包
+  - 'toolkit'
+  # 模板
+  - 'templates/*'
