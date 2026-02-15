@@ -54,13 +54,21 @@ function parseEnv(): EnvConfig {
   }
   
   if (foundEnvFiles.length === 0) {
-    // Show all possible paths in error message for debugging
+    // ✅ 在 Vercel 等云平台上，环境变量通过 process.env 提供，不需要 .env 文件
+    // 不再抛出错误，而是返回空配置，让调用方使用 process.env
+    if (process.env.NODE_ENV === 'production') {
+      // 生产环境下，返回空配置，依赖 process.env
+      console.warn('Warning: No .env file found. Using process.env for configuration.');
+      return { file: '', config: {} };
+    }
+
+    // 开发环境下，仍然提示用户创建 .env 文件
     const allPossiblePaths: string[] = [];
     for (const basePath of possibleBasePaths) {
       allPossiblePaths.push(path.join(basePath, '.env'));
       allPossiblePaths.push(path.join(basePath, '.env.prod'));
     }
-    
+
     throw new Error(
       `No environment file found. Searched in these locations:\n` +
       allPossiblePaths.map((p: string) => `- ${p}`).join('\n') +

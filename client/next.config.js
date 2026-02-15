@@ -7,11 +7,27 @@ const { config } = require('@fecommunity/reactpress-toolkit');
 const antdVariablesFilePath = path.resolve(__dirname, './antd-custom.less');
 
 const getServerApiUrl = () => {
+  // ✅ 优先使用 Vercel 环境变量（构建时可用）
+  if (process.env.SERVER_API_URL) {
+    return process.env.SERVER_API_URL;
+  }
+
+  // 其次使用 toolkit config（本地开发，从 .env 文件读取）
+  if (config.SERVER_API_URL) {
+    return config.SERVER_API_URL;
+  }
+
   if (config.SERVER_URL) {
     return `${config.SERVER_SITE_URL}/api`;
-  } else {
-    return config.SERVER_API_URL || `${process.env.SERVER_SITE_URL}/api` || 'http://localhost:3002/api';
   }
+
+  // 最后使用 SERVER_SITE_URL 拼接
+  if (process.env.SERVER_SITE_URL) {
+    return `${process.env.SERVER_SITE_URL}/api`;
+  }
+
+  // 默认值
+  return 'http://localhost:3002/api';
 };
 
 /** @type {import('next').NextConfig} */
